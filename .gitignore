@@ -1,0 +1,13 @@
+.DS_Store
+*.exe
+*.exe.manifest
+*.obj
+*.o
+*.xbe
+*.inl
+*.d
+*.i
+*.bc
+*.pdb
+*.iso
+bin/
