@@ -5,4 +5,5 @@ Small, PoC-type tool to patch Xbox BIOSes in RAM in order to disable patching co
 
 Tested with:
 - iND 5003.06
+- X2 5035
 
