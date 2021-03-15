@@ -7,3 +7,5 @@ Tested with:
 - iND 5003.06
 - X2 5035
 
+## Disclaimer
+This is considered to be a prototype, use at your own risk!
