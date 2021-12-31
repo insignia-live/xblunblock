@@ -128,7 +128,7 @@ uint8_t *find_dashboard_detection()
     uint8_t *dashcheck_addr = find_sig(dashboard_detection_signature);
 
     if (dashcheck_addr) {
-        debugPrint("dashboard check instruction signature found: %x\n", dashcheck_addr);
+        debugPrint("dashboard check instruction signature found: %x\n", (uint32_t)dashcheck_addr);
     }
 
     return dashcheck_addr;
