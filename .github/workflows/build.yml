@@ -1,0 +1,71 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build-normal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build binary
+      run: docker run -v `pwd`:/usr/src/app -t ghcr.io/xboxdev/nxdk:latest make
+    - name: Rename binary
+      run: sudo chown -R `id -u`:`id -g` bin && mv bin/default.xbe bin/xblunblock.xbe
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: xblunblock.xbe
+        path: bin/xblunblock.xbe
+  build-quick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Build binary
+      run: docker run -v `pwd`:/usr/src/app -t ghcr.io/xboxdev/nxdk:latest make CXXFLAGS=-DQUICK_MODE
+    - name: Rename binary
+      run: sudo chown -R `id -u`:`id -g` bin && mv bin/default.xbe bin/xblunblock_q.xbe
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: xblunblock_q.xbe
+        path: bin/xblunblock_q.xbe
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' && github.repository_owner == 'insignia-live'
+    runs-on: ubuntu-latest
+    needs: [build-normal, build-quick]
+    steps:
+    - name: Define Build Tag
+      id: build_tag
+      run: echo "::set-output name=BUILD_TAG::v$(date -u +'%Y%m%d%H%M')"
+    - name: Download artifacts
+      uses: actions/download-artifact@v2
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.build_tag.outputs.BUILD_TAG }}
+        release_name: ${{ steps.build_tag.outputs.BUILD_TAG }}
+    - name: Upload Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: xblunblock.xbe/xblunblock.xbe
+        asset_name: xblunblock.xbe
+        asset_content_type: binary/octet-stream
+    - name: Upload Release Assets
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: xblunblock_q.xbe/xblunblock_q.xbe
+        asset_name: xblunblock_q.xbe
+        asset_content_type: binary/octet-stream
