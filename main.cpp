@@ -8,6 +8,10 @@
 #include <hal/xbox.h>
 #include <windows.h>
 
+#ifdef QUICK_MODE
+#define debugPrint(...)
+#endif
+
 const uint32_t kernel_start = (uint32_t)0x80010000;
 PIMAGE_DOS_HEADER kernel_dos_header = (PIMAGE_DOS_HEADER)kernel_start;
 PIMAGE_NT_HEADERS32 kernel_nt_header = (PIMAGE_NT_HEADERS32)((uint32_t)kernel_dos_header + kernel_dos_header->e_lfanew);
@@ -146,7 +150,9 @@ void patch_dashboard_detection (uint8_t *addr)
 
 int main (void)
 {
+#ifndef QUICK_MODE
     XVideoSetMode(640, 480, 32, REFRESH_DEFAULT);
+#endif
 
     debugPrint("Checking for XONLINE signature...\n");
     uint8_t *xonline_signature = find_XONLINE();
@@ -184,12 +190,13 @@ int main (void)
         patch_dashboard_detection(dashboard_detection);
     }
 
-
+#ifndef QUICK_MODE
     debugPrint("\nWe're done here. Rebooting in");
     for (int i = 10; i > 0; i--) {
         debugPrint(" %d", i);
         Sleep(1000);
     }
+#endif
 
     HalReturnToFirmware(HalQuickRebootRoutine);
 
