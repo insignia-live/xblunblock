@@ -10,7 +10,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Build binary
-      run: docker run -v `pwd`:/usr/src/app -t ghcr.io/xboxdev/nxdk:latest make
+      run: docker run -v `pwd`:/usr/src/app -t ghcr.io/xboxdev/nxdk:git-22565f68 make
     - name: Rename binary
       run: sudo chown -R `id -u`:`id -g` bin && mv bin/default.xbe bin/xblunblock.xbe
     - name: Upload build artifact
@@ -25,7 +25,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Build binary
-      run: docker run -v `pwd`:/usr/src/app -t ghcr.io/xboxdev/nxdk:latest make CXXFLAGS=-DQUICK_MODE
+      run: docker run -v `pwd`:/usr/src/app -t ghcr.io/xboxdev/nxdk:git-22565f68 make CXXFLAGS=-DQUICK_MODE
     - name: Rename binary
       run: sudo chown -R `id -u`:`id -g` bin && mv bin/default.xbe bin/xblunblock_q.xbe
     - name: Upload build artifact
